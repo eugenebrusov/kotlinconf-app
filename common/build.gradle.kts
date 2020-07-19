@@ -16,7 +16,6 @@ plugins {
 
 android {
     compileSdkVersion(28)
-    buildToolsVersion = "29.0.2"
     defaultConfig {
         minSdkVersion(16)
         targetSdkVersion(28)
@@ -27,13 +26,13 @@ kotlin {
     jvm()
     android()
 
-    val iosArm32 = iosArm32("iosArm32")
-    val iosArm64 = iosArm64("iosArm64")
-    val iosX64 = iosX64("iosX64")
-
-    if (ideaActive) {
-        iosX64("ios")
-    }
+//    val iosArm32 = iosArm32("iosArm32")
+//    val iosArm64 = iosArm64("iosArm64")
+//    val iosX64 = iosX64("iosX64")
+//
+//    if (ideaActive) {
+//        iosX64("ios")
+//    }
 
     sourceSets {
         val commonMain by getting {
@@ -73,61 +72,69 @@ kotlin {
             }
         }
 
-        val iosMain = if (ideaActive) {
-            getByName("iosMain")
-        } else {
-            create("iosMain")
-        }
-
-        iosMain.apply {
-            dependsOn(mobileMain)
-
-            dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$coroutines_version")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:$serialization_version")
-
-                implementation("io.ktor:ktor-client-ios:$ktor_version")
-                implementation("io.ktor:ktor-client-serialization-native:$ktor_version")
-            }
-        }
-
-        val iosArm32Main by getting
-        val iosArm64Main by getting
-        val iosX64Main by getting
-
-        configure(listOf(iosArm32Main, iosArm64Main, iosX64Main)) {
-            dependsOn(iosMain)
-        }
+//        val iosMain = if (ideaActive) {
+//            getByName("iosMain")
+//        } else {
+//            create("iosMain")
+//        }
+//
+//        iosMain.apply {
+//            dependsOn(mobileMain)
+//
+//            dependencies {
+//                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$coroutines_version")
+//                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:$serialization_version")
+//
+//                implementation("io.ktor:ktor-client-ios:$ktor_version")
+//                implementation("io.ktor:ktor-client-serialization-native:$ktor_version")
+//            }
+//        }
+//
+//        val iosArm32Main by getting
+//        val iosArm64Main by getting
+//        val iosX64Main by getting
+//
+//        configure(listOf(iosArm32Main, iosArm64Main, iosX64Main)) {
+//            dependsOn(iosMain)
+//        }
     }
 
-    val frameworkName = "KotlinConfAPI"
+//    val frameworkName = "KotlinConfAPI"
+//
+//    configure(listOf(iosArm32, iosArm64, iosX64)) {
+//        compilations {
+//            val main by getting {
+//                extraOpts("-Xobjc-generics")
+//            }
+//        }
+//
+//        binaries.framework {
+//            export("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutines_version")
+//            baseName = frameworkName
+//        }
+//    }
+//
+//    tasks.register<FatFrameworkTask>("debugFatFramework") {
+//        baseName = frameworkName
+//        group = "Universal framework"
+//        description = "Builds a universal (fat) debug framework"
+//
+//        from(iosX64.binaries.getFramework("DEBUG"))
+//    }
+//
+//    tasks.register<FatFrameworkTask>("releaseFatFramework") {
+//        baseName = frameworkName
+//        group = "Universal framework"
+//        description = "Builds a universal (release) debug framework"
+//
+//        from(iosArm64.binaries.getFramework("RELEASE"), iosArm32.binaries.getFramework("RELEASE"))
+//    }
 
-    configure(listOf(iosArm32, iosArm64, iosX64)) {
-        compilations {
-            val main by getting {
-                extraOpts("-Xobjc-generics")
-            }
-        }
-
-        binaries.framework {
-            export("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutines_version")
-            baseName = frameworkName
-        }
-    }
-
-    tasks.register<FatFrameworkTask>("debugFatFramework") {
-        baseName = frameworkName
-        group = "Universal framework"
-        description = "Builds a universal (fat) debug framework"
-
-        from(iosX64.binaries.getFramework("DEBUG"))
-    }
-
-    tasks.register<FatFrameworkTask>("releaseFatFramework") {
-        baseName = frameworkName
-        group = "Universal framework"
-        description = "Builds a universal (release) debug framework"
-
-        from(iosArm64.binaries.getFramework("RELEASE"), iosArm32.binaries.getFramework("RELEASE"))
+    tasks.withType(KotlinCompile::class).all {
+        kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
+        kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.time.ExperimentalTime"
+        kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlinx.coroutines.FlowPreview"
+        kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlinx.serialization.UnstableDefault"
     }
 }
